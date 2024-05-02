@@ -4,27 +4,30 @@ import { fabric } from "fabric";
 
 import type { Handler, Line, Point, ResizeEventPayload } from "./types";
 
-const props = withDefaults(defineProps<{
-  src: string
-  width?: number
-  height?: number
-  removeBackground?: boolean
-  backgroundColor?: string
-  points?: Point[]
-  lines?: Line
-  handler?: Handler
-}>(), {
-  backgroundColor: "rgba(0, 0, 0, 0.7)"
-})
+const props = withDefaults(
+  defineProps<{
+    src: string;
+    width?: number;
+    height?: number;
+    removeBackground?: boolean;
+    backgroundColor?: string;
+    points?: Point[];
+    lines?: Line;
+    handler?: Handler;
+  }>(),
+  {
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  }
+);
 
 const emits = defineEmits<{
-  (event: 'loaded'): void
-  (event: 'resize', payload: ResizeEventPayload): void
+  (event: "loaded"): void;
+  (event: "resize", payload: ResizeEventPayload): void;
 }>();
 
 const canvas = ref<fabric.Canvas>();
 const image = ref<fabric.Image>();
-const points = ref<Point[]>()
+const points = ref<Point[]>();
 
 const scale = computed(() => {
   if (image.value) {
@@ -86,14 +89,14 @@ async function createImage(src: string): Promise<fabric.Image> {
 
 function getPointsWithoutOffset(handlers: (fabric.Rect | fabric.Circle)[]) {
   const points = handlers.map((value) => {
-    const loffset = value.data.loffset
-    const toffset = value.data.toffset
+    const loffset = value.data.loffset;
+    const toffset = value.data.toffset;
     return {
       x: value.left! + loffset,
-      y: value.top! + toffset
-    }
-  })
-  return points
+      y: value.top! + toffset,
+    };
+  });
+  return points;
 }
 
 function getPoints(): Point[] {
@@ -104,21 +107,21 @@ function getPoints(): Point[] {
         y: value.y * scale.value,
       };
     });
-  } else {    
-    // Line width and height are added as offset in order to render the lines inside canvas' bounds 
+  } else {
+    // Line width and height are added as offset in order to render the lines inside canvas' bounds
     // otherwise the lines will render outside canvas' bounds
     return [
       { x: 0, y: 0 },
       { x: canvasWidth.value - lineProps.value.width, y: 0 },
-      { x: canvasWidth.value - lineProps.value.width, y: canvasHeight.value - lineProps.value.width},
+      { x: canvasWidth.value - lineProps.value.width, y: canvasHeight.value - lineProps.value.width },
       { x: 0, y: canvasHeight.value - lineProps.value.width },
     ];
   }
 }
 
 function drawMask(handlers: (fabric.Rect | fabric.Circle)[]) {
-  if (props.removeBackground) return
-  
+  if (props.removeBackground) return;
+
   let overlay = getObjectByName("overlay");
   if (!overlay) {
     overlay = new fabric.Rect({
@@ -133,7 +136,7 @@ function drawMask(handlers: (fabric.Rect | fabric.Circle)[]) {
     });
     canvas.value!.add(overlay);
   }
-  const points = getPointsWithoutOffset(handlers)
+  const points = getPointsWithoutOffset(handlers);
 
   let mask = getObjectByName("mask") as fabric.Polygon;
   if (!mask) {
@@ -177,11 +180,11 @@ function objectMovingEvent(lines: fabric.Line[], handlers: (fabric.Rect | fabric
   canvas.value!.on("object:moving", (e) => {
     const p = e.target;
 
-    const odata = p?.data
+    const odata = p?.data;
     const index = odata["index"];
 
-    odata["loffset"] = 0 // Reset the offset of the line width
-    odata["toffset"] = 0 
+    odata["loffset"] = 0; // Reset the offset of the line width
+    odata["toffset"] = 0;
     if (p?.left! < 0) {
       p?.set({ left: 0 });
     }
@@ -190,11 +193,11 @@ function objectMovingEvent(lines: fabric.Line[], handlers: (fabric.Rect | fabric
     }
     if (p?.left! > canvasWidth.value) {
       p?.set({ left: canvasWidth.value - lineProps.value.width });
-      odata["loffset"] = lineProps.value.width // Set the offset of the line width
+      odata["loffset"] = lineProps.value.width; // Set the offset of the line width
     }
     if (p?.top! > canvasHeight.value) {
       p?.set({ top: canvasHeight.value - lineProps.value.width });
-      odata["toffset"] = lineProps.value.width
+      odata["toffset"] = lineProps.value.width;
     }
 
     const fromLine = lines!.find((line) => line.data.from === index);
@@ -205,19 +208,19 @@ function objectMovingEvent(lines: fabric.Line[], handlers: (fabric.Rect | fabric
 
     drawMask(handlers);
     canvas.value!.renderAll();
-    
-    const scaledPoints = getPointsWithoutOffset(handlers)
-    points.value = scaledPoints
+
+    const scaledPoints = getPointsWithoutOffset(handlers);
+    points.value = scaledPoints;
 
     emits("resize", {
       canvas: scaledPoints,
       image: scaledPoints.map((value) => {
         return {
           x: Math.fround(value.x / scale.value),
-          y: Math.fround(value.y / scale.value)
-        }
-      })
-    })
+          y: Math.fround(value.y / scale.value),
+        };
+      }),
+    });
   });
 }
 
@@ -225,10 +228,9 @@ async function render(keepPoints = false) {
   await setCanvas();
 
   if (keepPoints) {
-    if (!points.value)
-      points.value = getPoints()
+    if (!points.value) points.value = getPoints();
   } else {
-    points.value = getPoints()
+    points.value = getPoints();
   }
 
   const handlers = points.value!.map((value, index) => {
@@ -248,8 +250,8 @@ async function render(keepPoints = false) {
       hasBorders: false,
       data: {
         index: index,
-        loffset: value.x === 0? 0 : lineProps.value.width,
-        toffset: value.y === 0? 0 : lineProps.value.width
+        loffset: value.x === 0 ? 0 : lineProps.value.width,
+        toffset: value.y === 0 ? 0 : lineProps.value.width,
       },
     };
     if (handlerProps.value.type === "circle") return new fabric.Circle(options);
@@ -276,16 +278,23 @@ async function render(keepPoints = false) {
 
   canvas.value!.add(...handlers, ...lines);
   canvas.value!.renderAll();
-  emits("loaded")
+  emits("loaded");
 }
 
-watch(() => [props.src, props.width, props.points], () => { 
-  render()
-}, {deep: true})
+watch(
+  () => [props.src, props.width, props.points],
+  () => {
+    render();
+  },
+  { deep: true }
+);
 
-watch(() => [props.removeBackground, props.backgroundColor], () => {
-  render(true)
-})
+watch(
+  () => [props.removeBackground, props.backgroundColor],
+  () => {
+    render(true);
+  }
+);
 
 // onCreate
 render();

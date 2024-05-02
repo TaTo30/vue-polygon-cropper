@@ -1,23 +1,61 @@
 {
-  "name": "vue-cropper",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@tato30/vue-polygon-cropper",
+  "version": "0.1.0",
+  "description": "A polygon cropper built in top of fabric.js ",
   "type": "module",
+  "author": {
+    "name": "Aldo Hernandez",
+    "url": "https://github.com/TaTo30"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/TaTo30/vue-polygon-pdf/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TaTo30/vue-polygon-pdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TaTo30/vue-polygon-pdf/issues"
+  },
+  "keywords": [
+    "cropper",
+    "polygon",
+    "vue",
+    "fabric"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.umd.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "dev": "vite --force --config vite.playground.ts",
-    "build": "vue-tsc && vite build",
+    "build": "npm run build:lib && npm run build:dts",
+    "build:lib": "vite build",
+    "build:dts": "vue-tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "preview": "vite preview"
-  },
-  "dependencies": {
-    "fabric": "^5.3.0"
   },
   "peerDependencies": {
     "vue": "^3.4.21"
   },
+  "dependencies": {
+    "fabric": "^5.3.0"
+  },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.16.1",
+    "@babel/types": "^7.24.5",
     "@types/fabric": "^5.3.7",
     "@types/node": "^20.12.8",
     "@vitejs/plugin-vue": "^5.0.4",
+    "eslint": "^9.1.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vue-tsc": "^2.0.6"
