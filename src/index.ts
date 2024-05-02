@@ -1,11 +1,11 @@
 import type { Plugin } from "vue";
-import VueCropper from "./components/VueCropper.vue";
+import VuePolygonCropper from "./components/VuePolygonCropper.vue";
 
-export const VueCropperPlugin: Plugin = {
+export const VuePolygonCropperPlugin: Plugin = {
   install(Vue) {
-    Vue.component(VueCropper.name, VueCropper);
+    Vue.component(VuePolygonCropper.name!, VuePolygonCropper);
   },
 };
 
 export * from "./components";
-export default VueCropperPlugin;
+export default VuePolygonCropperPlugin;

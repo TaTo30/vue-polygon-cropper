@@ -1,2 +1,2 @@
-// export * from "./types"
-export {default as VueCropper} from "./VueCropper.vue"
+export { default as VuePolygonCropper } from "./VuePolygonCropper.vue"
+export * from "./types"
