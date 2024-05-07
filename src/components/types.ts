@@ -5,7 +5,7 @@ export interface Line {
 }
 
 export interface Handler {
-  type: string // Two posibles values: 'rect' or 'circle'
+  type: "rect" | "circle"
   color?: string
   borderColor?: string
   borderWidth?: number

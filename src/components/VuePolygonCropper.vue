@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { fabric } from "fabric";
 
 import type { Handler, Line, Point, ResizeEventPayload } from "./types";
@@ -9,11 +9,11 @@ const props = withDefaults(
     src: string;
     width?: number;
     height?: number;
-    removeBackground?: boolean;
+    noBackground?: boolean;
     backgroundColor?: string;
     points?: Point[];
     lines?: Line;
-    handler?: Handler;
+    handlers?: Handler;
   }>(),
   {
     backgroundColor: "rgba(0, 0, 0, 0.7)",
@@ -22,12 +22,13 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (event: "loaded"): void;
-  (event: "resize", payload: ResizeEventPayload): void;
+  (event: "moving", payload: ResizeEventPayload): void;
 }>();
 
 const canvas = ref<fabric.Canvas>();
 const image = ref<fabric.Image>();
 const points = ref<Point[]>();
+const canvasElement = ref<HTMLCanvasElement>()
 
 const scale = computed(() => {
   if (image.value) {
@@ -65,7 +66,8 @@ const handlerProps = computed(() => {
       width: 10,
       height: 10,
       radius: 5,
-    }
+    },
+    props.handlers
   );
 });
 
@@ -120,7 +122,7 @@ function getPoints(): Point[] {
 }
 
 function drawMask(handlers: (fabric.Rect | fabric.Circle)[]) {
-  if (props.removeBackground) return;
+  if (props.noBackground) return;
 
   let overlay = getObjectByName("overlay");
   if (!overlay) {
@@ -157,7 +159,7 @@ async function setCanvas() {
 
   if (!canvas.value) {
     // Instance of canvas if not exists
-    canvas.value = new fabric.Canvas("vpolcropper", { selection: false });
+    canvas.value = new fabric.Canvas(canvasElement.value!, { selection: false });
   } else {
     // If instance of canvas exists clear all data and draw objects from scratch
     canvas.value.clear();
@@ -207,12 +209,13 @@ function objectMovingEvent(lines: fabric.Line[], handlers: (fabric.Rect | fabric
     toLine?.set({ x2: p?.left, y2: p?.top });
 
     drawMask(handlers);
+    handlers.forEach((value) => value.bringToFront()) // Make the handlers show on top layer
     canvas.value!.renderAll();
 
     const scaledPoints = getPointsWithoutOffset(handlers);
     points.value = scaledPoints;
 
-    emits("resize", {
+    emits("moving", {
       canvas: scaledPoints,
       image: scaledPoints.map((value) => {
         return {
@@ -276,7 +279,7 @@ async function render(keepPoints = false) {
   objectMovingEvent(lines, handlers);
   drawMask(handlers);
 
-  canvas.value!.add(...handlers, ...lines);
+  canvas.value!.add(...lines, ...handlers);
   canvas.value!.renderAll();
   emits("loaded");
 }
@@ -290,16 +293,17 @@ watch(
 );
 
 watch(
-  () => [props.removeBackground, props.backgroundColor],
+  () => [props.noBackground, props.backgroundColor, props.handlers, props.lines],
   () => {
     render(true);
   }
 );
 
-// onCreate
-render();
+onMounted(() => {
+  render();
+})
 </script>
 
 <template>
-  <canvas id="vpolcropper"></canvas>
+  <canvas ref="canvasElement"></canvas>
 </template>
