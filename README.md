@@ -166,3 +166,69 @@ Default (All properties are optional):
   }"
 />
 ```
+
+## Events
+
+### loaded
+
+Emitted once the image has been loaded.
+
+```vue
+<vue-polygon-cropper src="https://domain/images/image1.jpg" @loaded="onLoaded" />
+```
+
+### moving
+
+Emitted when a point has been moved.
+
+```vue
+<vue-polygon-cropper src="https://domain/images/image1.jpg" @loaded="onMoving" />
+```
+
+The payload value contains the coordinates of all points in the canvas and scaled to image's dimensions
+
+Example:
+
+```json
+{
+  // Coordinates based on canvas
+  "canvas": [ 
+    {
+      x: 120,
+      y: 52
+    },
+    {
+      x: 620,
+      y: 80
+    },
+    {
+      x: 690,
+      y: 240
+    },
+    {
+      x: 90,
+      y: 300
+    }
+  ],
+  // Coordinates scaled in base image's dimensions (scale: 2, in this example)
+  "image": { 
+    {
+      x: 240,
+      y: 104
+    },
+    {
+      x: 1240,
+      y: 160
+    },
+    {
+      x: 1380,
+      y: 480
+    },
+    {
+      x: 180,
+      y: 600
+    }
+  }
+}
+
+```
