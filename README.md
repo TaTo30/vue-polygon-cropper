@@ -1,11 +1,19 @@
-# vue-polygon-cropper
+<div align="center">
+  <img width=300 src="./docs/logo.png" />
+  <h1>vue-polygon-cropper</h1>
+</div>
+
+<div align="center">
+  <h2><a href="https://stackblitz.com/edit/vitejs-vite-urtqie?file=src%2FApp.vue">⚡Try on StackBlitz!</a></h2>
+</div>
 
 > [!WARNING]
-> This component is still in active development and only early versions has been released. Any recommendation, feature propose or bug report feel free to open an Issue or PR 😊
+> This component is still in development and only a early version with basic features have been released. Any recommendation, feature propose or bug report feel free to open an Issue or PR 😊
 
 ## Introduction
 
-VuePolygonCropper is a **Vue 3** component built-in in top of `fabric.js` to crop an image with polygon shapes.
+vue-polygon-cropper is a **Vue 3** component built-in in top of `fabric.js` to crop an image in polygon shapes.
+
 
 ## Installation
 
